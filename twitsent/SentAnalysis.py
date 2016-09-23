@@ -1,4 +1,7 @@
-from . import twitter
+try:
+    from . import python-twitter
+except:
+    import python-twitter
 
 api = twitter.Api(consumer_key='Fv3oNDnwH4BVAwMYryuKRqw6M',
                  consumer_secret='u2zhyNMsdftvZWVEZT94IbbgiH7t2YjFEjwPBopAmAwCs71yly',
