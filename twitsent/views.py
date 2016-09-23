@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import HttpResponse
-import SentAnalysis
+from . import SentAnalysis
 
 def twit_sent(request):
     return render(request, 'twitsent/twit_sent.html')
