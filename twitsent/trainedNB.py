@@ -38,10 +38,10 @@ class PreProcessTweets:
         tweet=re.sub(r'#([^\s]+)',r'\1',tweet)
         # 5. Replace repitions in words
         tweet = re.sub(r'(.)\1{2,}', r'\1', tweet)
-        try:
+        '''try:
             tweet = tweet.decode('latin1', 'ignore')
         except UnicodeEncodeError:
-            tweet = tweet
+            tweet = tweet'''
         #print type(tweet)
         tweet=word_tokenize(tweet)
         # This tokenizes the tweet into a list of words 
