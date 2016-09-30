@@ -1,7 +1,10 @@
 import nltk 
 import pickle
 import twitter
+import sqlite3
 import os
+from django.db import transaction
+from .models import RecentTweets, SentPercent
 import re
 from nltk.tokenize import word_tokenize
 from string import punctuation 
@@ -61,11 +64,11 @@ def extract_features(tweet):
         # and values as True or False 
     return features 
 
-def startSentAnalysis(testData):
+def startSentAnalysis(testData, search_string):
     tweetProcessor=PreProcessTweets()
     ppTestData=tweetProcessor.processTweets(testData)
     #print "Processing..."
-
+    #open file where classifier is stored
     my_dir = os.path.dirname(os.path.abspath(__file__))
     pickle_file_path2 = os.path.join(my_dir, 'my_classifier.pickle')
     with open(pickle_file_path2, 'rb') as pickle_file:
@@ -73,27 +76,41 @@ def startSentAnalysis(testData):
 
     NBResultLabels=[NBayesClassifier.classify(extract_features(tweet[0])) for tweet in ppTestData]
     
+    #open db file from parent directory for django standards
+    my_dir = os.path.dirname(__file__)
+    par_dir = os.path.abspath(os.path.join(my_dir, os.pardir))
+    db_file = os.path.join(par_dir, 'db.sqlite3')
+    
+    
+    #connect and run sql on tweetDB
+    '''conn = sqlite3.connect(db_file)
+    c = conn.cursor()
+    c.execute('drop table if exists RecentTweets')
+    sql = 'create table if not exists RecentTweets(tweet TEXT, sentiment TEXT, topic TEXT)'
+    c.execute(sql)
+    print 'Made table!'
     for x in range(10):
-        print (testData[x]['text'])
-        print (NBResultLabels[x])
+        c.execute("""
+            INSERT INTO 
+                RecentTweets 
+            VALUES 
+                (?, ?, ?)
+        """, (testData[x]['text'], NBResultLabels[x], search_string))
+    conn.commit()
+    conn.close()'''
+    #creat objects with models in django
+    RecentTweets.objects.all().delete()
+    SentPercent.objects.all().delete()
+    for x in range(10):
+        x = RecentTweets.objects.create(tweet = testData[x]['text'], sentiment = NBResultLabels[x], topic = search_string)
 
 
     if NBResultLabels.count('positive')>NBResultLabels.count('negative'):
-        return "NB Result Positive Sentiment " + str(100*NBResultLabels.count('positive')/len(NBResultLabels))+"%"
+        x = SentPercent.objects.create(topic = search_string, sent_perc = "Positive Sentiment " + str(100*NBResultLabels.count('positive')/len(NBResultLabels))+"%")
+        #return "NB Result Positive Sentiment " + str(100*NBResultLabels.count('positive')/len(NBResultLabels))+"%"
     else: 
-        return "NB Result Negative Sentiment " + str(100*NBResultLabels.count('negative')/len(NBResultLabels))+"%"
-        
-
-def createTestData(search_string):
-    try:
-        tweets_fetched=api.GetSearch(search_string, count=200)
-
-        testData = [{"text":status.text,"label":None} for status in tweets_fetched]
-        startSentAnalysis(testData)
-        
-    
-    except:
-        return "Sorry, an error occured."
+        x = SentPercent.objects.create(topic = search_string, sent_perc = "Negative Sentiment " + str(100*NBResultLabels.count('negative')/len(NBResultLabels))+"%")
+        #return "NB Result Negative Sentiment " + str(100*NBResultLabels.count('negative')/len(NBResultLabels))+"%"
 
 
 def createTestData(search_string):
@@ -103,6 +120,14 @@ def createTestData(search_string):
         tweets_fetched=api.GetSearch(search_string, count=200)
 
         testData = [{"text":status.text,"label":None} for status in tweets_fetched]
-        return startSentAnalysis(testData)
+        return startSentAnalysis(testData, search_string)
+        '''try:
+            tweets_fetched=api.GetSearch(search_string, count=200)
 
+            testData = [{"text":status.text,"label":None} for status in tweets_fetched]
+            return startSentAnalysis(testData)
+
+    
+        except:
+            return "Sorry, an error occured."'''
 

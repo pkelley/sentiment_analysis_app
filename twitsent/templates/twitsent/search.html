@@ -37,7 +37,7 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar" aria-expanded="false" aria-controls="navbar">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -45,7 +45,7 @@
           </button>
           <a class="navbar-brand" href="resume.html">Preston Kelley</a>
         </div>
-        <div class="collapse navbar-collapse" id="navigationbar">
+        <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="./twit_sent.html">TwitSent App</a></li>
             <li><a href="./about.html">About</a></li>
@@ -60,30 +60,25 @@
       <div class="starter-template">
         <p> </p>
         <p> </p>
-        <h1>Welcome to TwitSent!</h1>
+        <h1>Preston Kelley</h1>
           <p> </p>
           <p> </p>
-        <p class="lead">This is my twitter sentiment project. <br>Type a search term and see the most recent sentiment on twitter about it!</br></p>
-        <form method="POST" action="/search">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-sm-2 col-md-offset-5">
-                    <input type="text" class="form-control" name="textfield" placeholder="Trump" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Trump'">
-                </div>
-                <div class="col-sm-1">
-                    <button type="submit" class="btn btn-info">Search</button>
-                </div>
-            </div>
-            
-        </form>
-        <p> </p>
-      <p> </p>
-      <div class="col-md-6 col-md-offset-3">
-        <p> Click search and let the magic of machine learning do its thing...</p>
+        <div>
+            {% for result in sent %}
+            <p class="lead text-primary">For the search term <large><strong>{{ result.topic }}</strong></large> there is:</p>
+            <h2 class="text-primary">{{ result.sent_perc }}</h2>
+            {% endfor %}
+            <p> </p>
+            <p class="lead text-success">Here's a sample of some tweets that I pulled just now. How did the algorithm do?</p>
+            {% for tweet in all_tweets %}
+                <p>{{ tweet.tweet }}</p>
+                <p>{{ tweet.sentiment }}</p>
+            {% endfor %}
+          </div>
+        
+          <p> </p>
       </div>
-      </div>
-
-    </div><!-- /.container -->
+      </div><!-- /.container -->
 
 
     <!-- Bootstrap core JavaScript
