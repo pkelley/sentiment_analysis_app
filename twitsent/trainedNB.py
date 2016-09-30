@@ -64,7 +64,7 @@ def extract_features(tweet):
 def startSentAnalysis(testData):
     tweetProcessor=PreProcessTweets()
     ppTestData=tweetProcessor.processTweets(testData)
-    print "Processing..."
+    #print "Processing..."
 
     my_dir = os.path.dirname(os.path.abspath(__file__))
     pickle_file_path2 = os.path.join(my_dir, 'my_classifier.pickle')
