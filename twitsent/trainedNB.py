@@ -74,8 +74,8 @@ def startSentAnalysis(testData):
     NBResultLabels=[NBayesClassifier.classify(extract_features(tweet[0])) for tweet in ppTestData]
     
     for x in range(10):
-        print testData[x]['text']
-        print NBResultLabels[x]
+        print (testData[x]['text'])
+        print (NBResultLabels[x])
 
 
     if NBResultLabels.count('positive')>NBResultLabels.count('negative'):
