@@ -97,10 +97,12 @@ def createTestData(search_string):
 
 
 def createTestData(search_string):
+    if search_string == "":
+        return "Please give a search term"
+    else:
+        tweets_fetched=api.GetSearch(search_string, count=200)
 
-    tweets_fetched=api.GetSearch(search_string, count=200)
-
-    testData = [{"text":status.text,"label":None} for status in tweets_fetched]
-    return startSentAnalysis(testData)
+        testData = [{"text":status.text,"label":None} for status in tweets_fetched]
+        return startSentAnalysis(testData)
 
 

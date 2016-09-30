@@ -57,19 +57,31 @@
     <div class="container">
 
       <div class="starter-template">
-        <p></p>
-        <p></p>
+        <p> </p>
+        <p> </p>
         <h1>Preston Kelley</h1>
-          <p></p>
-          <p></p>
+          <p> </p>
+          <p> </p>
         <p class="lead">This is my twitter sentiment project. <br>Type a search term and see the most recent sentiment on twitter about it!</br></p>
         <form method="POST" action="/search">
             {% csrf_token %}
-            <input type="text" name="textfield">
+            <div class="row">
+                <div class="col-sm-2 col-md-offset-5">
+                    <input type="text" class="form-control" name="textfield" placeholder="Trump" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Trump'">
 
-            <button type="submit">Search</button>
+
+                </div>
+                <div class="col-sm-1">
+                    <button type="submit" class="btn btn-info">Search</button>
+                </div>
+            </div>
+            
         </form>
+        <p> </p>
+      <p> </p>
+      <div class="col-md-6 col-md-offset-3">
         <p> Click search and let the magic of machine learning do its thing...</p>
+      </div>
       </div>
 
     </div><!-- /.container -->
