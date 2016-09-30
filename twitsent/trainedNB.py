@@ -1,5 +1,5 @@
 import nltk 
-import cPickle as pickle
+import pickle
 import twitter
 import os
 import re
