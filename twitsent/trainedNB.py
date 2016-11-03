@@ -23,7 +23,7 @@ class PreProcessTweets:
         self._stopwords=set(stopwords.words('english')+list(punctuation)+['AT_USER','URL'])
         
     def processTweets(self,list_of_tweets):
-        # The list of tweets is a list of dictionaries which should have the keys, "text" and "label"
+        # list of dictionaries which should have the keys, "text" and "label"
         processedTweets=[]
         # This list will be a list of tuples. Each tuple is a tweet which is a list of words and its label
         for tweet in list_of_tweets:
@@ -31,15 +31,14 @@ class PreProcessTweets:
         return processedTweets
     
     def _processTweet(self,tweet):
-        # 1. Convert to lower case
         tweet=tweet.lower()
-        # 2. Replace links with the word URL 
+        # replace links with the word URL 
         tweet=re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL',tweet)     
-        # 3. Replace @username with "AT_USER"
+        # Replace @username with "AT_USER"
         tweet=re.sub('@[^\s]+','AT_USER',tweet)
-        # 4. Replace #word with word 
+        # Replace #word with word 
         tweet=re.sub(r'#([^\s]+)',r'\1',tweet)
-        # 5. Replace repitions in words
+        # Replace repitions in words
         tweet = re.sub(r'(.)\1{2,}', r'\1', tweet)
         '''try:
             tweet = tweet.decode('latin1', 'ignore')
@@ -48,16 +47,17 @@ class PreProcessTweets:
         #print type(tweet)
         tweet=word_tokenize(tweet)
         # This tokenizes the tweet into a list of words 
-        # Let's now return this list minus any stopwords 
+        # return this list minus any stopwords 
         return [word for word in tweet if word not in self._stopwords]
 def extract_features(tweet):
-    
+    # open pickle file and read word features into word_features
     my_dir = os.path.dirname(os.path.abspath(__file__))
     pickle_file_path = os.path.join(my_dir, 'word_features.pickle')
     with open(pickle_file_path, 'rb') as pickle_file:
         word_features = pickle.load(pickle_file)
     tweet_words=set(tweet)
     features={}
+    
     for word in word_features:
         features['contains(%s)' % word]=(word in tweet_words)
         # This will give us a dictionary , with keys like 'contains word1' and 'contains word2'
@@ -68,7 +68,7 @@ def startSentAnalysis(testData, search_string):
     tweetProcessor=PreProcessTweets()
     ppTestData=tweetProcessor.processTweets(testData)
     #print "Processing..."
-    #open file where classifier is stored
+    #open file where classifier is stored and read in
     my_dir = os.path.dirname(os.path.abspath(__file__))
     pickle_file_path2 = os.path.join(my_dir, 'my_classifier.pickle')
     with open(pickle_file_path2, 'rb') as pickle_file:
@@ -82,7 +82,7 @@ def startSentAnalysis(testData, search_string):
     db_file = os.path.join(par_dir, 'db.sqlite3')
     
     
-    #connect and run sql on tweetDB
+    #connect and run sql on tweetDB using queries
     '''conn = sqlite3.connect(db_file)
     c = conn.cursor()
     c.execute('drop table if exists RecentTweets')
@@ -98,13 +98,14 @@ def startSentAnalysis(testData, search_string):
         """, (testData[x]['text'], NBResultLabels[x], search_string))
     conn.commit()
     conn.close()'''
+    
     #creat objects with models in django
     RecentTweets.objects.all().delete()
     SentPercent.objects.all().delete()
     for x in range(10):
         x = RecentTweets.objects.create(tweet = testData[x]['text'], sentiment = NBResultLabels[x], topic = search_string)
 
-
+    # create entries in SentPercent table of either positive or negative with the percent concatenated
     if NBResultLabels.count('positive')>NBResultLabels.count('negative'):
         x = SentPercent.objects.create(topic = search_string, sent_perc = "Positive Sentiment " + str(100*NBResultLabels.count('positive')/len(NBResultLabels))+"%")
         #return "NB Result Positive Sentiment " + str(100*NBResultLabels.count('positive')/len(NBResultLabels))+"%"
